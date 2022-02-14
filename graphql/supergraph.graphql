@@ -1,0 +1,343 @@
+schema
+  @core(feature: "https://specs.apollo.dev/core/v0.2"),
+  @core(feature: "https://specs.apollo.dev/join/v0.1", for: EXECUTION)
+{
+  query: Query
+  mutation: Mutation
+}
+
+directive @core(as: String, feature: String!, for: core__Purpose) repeatable on SCHEMA
+
+directive @join__field(graph: join__Graph, provides: join__FieldSet, requires: join__FieldSet) on FIELD_DEFINITION
+
+directive @join__graph(name: String!, url: String!) on ENUM_VALUE
+
+directive @join__owner(graph: join__Graph!) on INTERFACE | OBJECT
+
+directive @join__type(graph: join__Graph!, key: join__FieldSet) repeatable on INTERFACE | OBJECT
+
+type AuthPayload {
+  access_token: String
+  expires_in: Int
+  refresh_token: String
+  token_type: String
+  user: User
+}
+
+type Channel
+  @join__owner(graph: CHANNEL)
+  @join__type(graph: CHANNEL, key: "id")
+  @join__type(graph: EMOJI, key: "id")
+{
+  emojis: [Emoji] @join__field(graph: EMOJI)
+  id: ID! @join__field(graph: CHANNEL)
+  name: String! @join__field(graph: CHANNEL)
+  title: String! @join__field(graph: CHANNEL)
+}
+
+input CreateChannel {
+  name: String!
+  title: String!
+}
+
+input CreateEmoji {
+  name: String!
+}
+
+"""A date string with format `Y-m-d`, e.g. `2011-05-23`."""
+scalar Date
+
+"""
+A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`.
+"""
+scalar DateTime
+
+type Emoji
+  @join__owner(graph: EMOJI)
+  @join__type(graph: EMOJI, key: "id")
+  @join__type(graph: CHANNEL, key: "id")
+{
+  channel: Channel @join__field(graph: CHANNEL)
+  code: String! @join__field(graph: EMOJI)
+  id: ID! @join__field(graph: EMOJI)
+  name: String! @join__field(graph: EMOJI)
+}
+
+input ForgotPasswordInput {
+  email: String!
+}
+
+type ForgotPasswordResponse {
+  message: String
+  status: String!
+}
+
+type GenericResponse {
+  message: String!
+  status: Boolean!
+}
+
+input LoginInput {
+  password: String!
+  username: String!
+}
+
+type LogoutResponse {
+  message: String
+  status: String!
+}
+
+type Mutation {
+  createChannel(input: CreateChannel): GenericResponse! @join__field(graph: CHANNEL)
+  createEmoji(input: CreateEmoji): GenericResponse! @join__field(graph: EMOJI)
+  forgotPassword(input: ForgotPasswordInput!): ForgotPasswordResponse! @join__field(graph: AUTH)
+  login(input: LoginInput): AuthPayload! @join__field(graph: AUTH)
+  logout: LogoutResponse! @join__field(graph: AUTH)
+  refreshToken(input: RefreshTokenInput): RefreshTokenPayload! @join__field(graph: AUTH)
+  register(input: RegisterInput): RegisterResponse! @join__field(graph: AUTH)
+  socialLogin(input: SocialLoginInput!): AuthPayload! @join__field(graph: AUTH)
+  updateForgottenPassword(input: NewPasswordWithCodeInput): ForgotPasswordResponse! @join__field(graph: AUTH)
+  updatePassword(input: UpdatePassword!): UpdatePasswordResponse! @join__field(graph: AUTH)
+  verifyEmail(input: VerifyEmailInput!): AuthPayload! @join__field(graph: AUTH)
+}
+
+input NewPasswordWithCodeInput {
+  email: String!
+  password: String!
+  password_confirmation: String!
+  token: String!
+}
+
+"""Allows ordering a list of records."""
+input OrderByClause {
+  """The column that is used for ordering."""
+  column: String!
+
+  """The direction that is used for ordering."""
+  order: SortOrder!
+}
+
+"""
+Aggregate functions when ordering by a relation without specifying a column.
+"""
+enum OrderByRelationAggregateFunction {
+  """Amount of items."""
+  COUNT
+}
+
+"""
+Aggregate functions when ordering by a relation that may specify a column.
+"""
+enum OrderByRelationWithColumnAggregateFunction {
+  """Average."""
+  AVG
+
+  """Amount of items."""
+  COUNT
+
+  """Maximum."""
+  MAX
+
+  """Minimum."""
+  MIN
+
+  """Sum."""
+  SUM
+}
+
+"""Information about pagination using a Relay style cursor connection."""
+type PageInfo {
+  """Number of nodes in the current page."""
+  count: Int!
+
+  """Index of the current page."""
+  currentPage: Int!
+
+  """The cursor to continue paginating forwards."""
+  endCursor: String
+
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """Index of the last available page."""
+  lastPage: Int!
+
+  """The cursor to continue paginating backwards."""
+  startCursor: String
+
+  """Total number of nodes in the paginated connection."""
+  total: Int!
+}
+
+"""Information about pagination using a fully featured paginator."""
+type PaginatorInfo {
+  """Number of items in the current page."""
+  count: Int!
+
+  """Index of the current page."""
+  currentPage: Int!
+
+  """Index of the first item in the current page."""
+  firstItem: Int
+
+  """Are there more pages after this one?"""
+  hasMorePages: Boolean!
+
+  """Index of the last item in the current page."""
+  lastItem: Int
+
+  """Index of the last available page."""
+  lastPage: Int!
+
+  """Number of items per page."""
+  perPage: Int!
+
+  """Number of total available items."""
+  total: Int!
+}
+
+type Query {
+  channels: [Channel!] @join__field(graph: CHANNEL)
+  emojis: [Emoji!] @join__field(graph: EMOJI)
+  user(id: ID): User @join__field(graph: AUTH)
+  users(
+    """Limits number of fetched items."""
+    first: Int!
+
+    """The offset from which items are returned."""
+    page: Int
+  ): UserPaginator @join__field(graph: AUTH)
+}
+
+input RefreshTokenInput {
+  refresh_token: String
+}
+
+type RefreshTokenPayload {
+  access_token: String!
+  expires_in: Int!
+  refresh_token: String!
+  token_type: String!
+}
+
+input RegisterInput {
+  email: String!
+  name: String!
+  password: String!
+  password_confirmation: String!
+}
+
+type RegisterResponse {
+  status: RegisterStatuses!
+  tokens: AuthPayload
+}
+
+enum RegisterStatuses {
+  MUST_VERIFY_EMAIL
+  SUCCESS
+}
+
+"""Information about pagination using a simple paginator."""
+type SimplePaginatorInfo {
+  """Number of items in the current page."""
+  count: Int!
+
+  """Index of the current page."""
+  currentPage: Int!
+
+  """Index of the first item in the current page."""
+  firstItem: Int
+
+  """Are there more pages after this one?"""
+  hasMorePages: Boolean!
+
+  """Index of the last item in the current page."""
+  lastItem: Int
+
+  """Number of items per page."""
+  perPage: Int!
+}
+
+input SocialLoginInput {
+  provider: String!
+  token: String!
+}
+
+"""Directions for ordering a list of records."""
+enum SortOrder {
+  """Sort records in ascending order."""
+  ASC
+
+  """Sort records in descending order."""
+  DESC
+}
+
+"""
+Specify if you want to include or exclude trashed results from a query.
+"""
+enum Trashed {
+  """Only return trashed results."""
+  ONLY
+
+  """Return both trashed and non-trashed results."""
+  WITH
+
+  """Only return non-trashed results."""
+  WITHOUT
+}
+
+input UpdatePassword {
+  old_password: String!
+  password: String!
+  password_confirmation: String!
+}
+
+type UpdatePasswordResponse {
+  message: String
+  status: String!
+}
+
+type User
+  @join__owner(graph: AUTH)
+  @join__type(graph: AUTH, key: "id")
+{
+  email: String! @join__field(graph: AUTH)
+  id: ID! @join__field(graph: AUTH)
+  name: String! @join__field(graph: AUTH)
+}
+
+"""A paginated list of User items."""
+type UserPaginator {
+  """A list of User items."""
+  data: [User!]!
+
+  """Pagination information about the list of items."""
+  paginatorInfo: PaginatorInfo!
+}
+
+input VerifyEmailInput {
+  token: String!
+}
+
+enum core__Purpose {
+  """
+  `EXECUTION` features provide metadata necessary to for operation execution.
+  """
+  EXECUTION
+
+  """
+  `SECURITY` features provide metadata necessary to securely resolve fields.
+  """
+  SECURITY
+}
+
+scalar join__FieldSet
+
+enum join__Graph {
+  AUTH @join__graph(name: "auth" url: "http://127.0.0.1:9999/graphql")
+  CHANNEL @join__graph(name: "channel" url: "http://127.0.0.1:8001/graphql")
+  EMOJI @join__graph(name: "emoji" url: "http://127.0.0.1:8000/graphql")
+}

@@ -1,0 +1,13 @@
+subgraphs:
+  channel:
+    routing_url: http://127.0.0.1:8001/graphql
+    schema:
+      subgraph_url: http://127.0.0.1:8001/graphql
+  emoji:
+    routing_url: http://127.0.0.1:8000/graphql
+    schema:
+      subgraph_url: http://127.0.0.1:8000/graphql
+  auth:
+    routing_url: http://127.0.0.1:9999/graphql
+    schema:
+      subgraph_url: http://127.0.0.1:9999/graphql

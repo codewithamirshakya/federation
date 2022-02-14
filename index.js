@@ -2,20 +2,24 @@ const { ApolloGateway, RemoteGraphQLDataSource } = require("@apollo/gateway");
 const { ApolloServer } = require("apollo-server-express");
 const express = require("express");
 const expressJwt = require("express-jwt");
+const { readFileSync } = require('fs');
+const config = require('./config/default');
 
-const port = 4000;
+const port = 5002;
 const app = express();
+
+const publicKey = readFileSync('./keys/oauth-public.key');
 
 app.use(
   expressJwt({
-    secret: "f1BtnWgD3VKY",
-    algorithms: ["HS256"],
+    secret: publicKey,
+    algorithms: ["RS256"],
     credentialsRequired: false
   })
 );
 
 const gateway = new ApolloGateway({
-  serviceList: [{ name: "accounts", url: "http://localhost:4001" }],
+  serviceList: config.services,
   buildService({ name, url }) {
     return new RemoteGraphQLDataSource({
       url,
@@ -23,6 +27,11 @@ const gateway = new ApolloGateway({
         request.http.headers.set(
           "user",
           context.user ? JSON.stringify(context.user) : null
+        );
+
+        request.http.headers.set(
+          "Authorization",
+          context.auth ? context.auth : null
         );
       }
     });
@@ -34,7 +43,8 @@ const server = new ApolloServer({
   subscriptions: false,
   context: ({ req }) => {
     const user = req.user || null;
-    return { user };
+    const auth = req.headers.authorization || null;
+    return { user, auth };
   }
 });
 

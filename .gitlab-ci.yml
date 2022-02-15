@@ -1,0 +1,76 @@
+stages:                                                                                                                                                                   
+  - preparation  
+  - codequality                                                                                                                                                         
+  - build                                                                                                                                                                 
+  - publish                                                                                                                                                               
+                                                                                                                                                                          
+variables:                                
+  IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME                                                                                                                      
+
+cache:
+  key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+
+
+.cq-template: &cq-definition
+    stage: codequality
+    image: sonarsource/sonar-scanner-cli:latest
+    script:
+      - sonar-scanner -Dsonar.projectKey=${PROJECT_NAME} -Dsonar.sources=. -Dsonar.host.url=${SQ_URL} -Dsonar.login=${SQ_TOKEN}
+    tags:
+      - $RUNNER_TAG
+    artifacts:
+      paths:
+      - .scannerwork
+      expire_in: 7 days
+      when: always
+
+.build-and-push-template: &build-and-push-definition                                                                                                                      
+    stage: build
+    image: docker:17
+    before_script:
+      - echo "$CI_JOB_TOKEN" | docker login $CI_REGISTRY -u gitlab-ci-token --password-stdin
+    script:
+
+      - echo "Buidling  Image"
+      - docker build -t $IMAGE_NAME .
+      - docker push $IMAGE_NAME
+    after_script:
+      - docker image rm -f $IMAGE_NAME
+    tags:
+      - $RUNNER_TAG
+
+.deploy: &deploy-definition                                                                                                                                               
+    stage: publish                                                                                                                                                        
+    script:     
+      - curl -I -k -X POST ${WEB_HOOK}                                                                                                                                                                                                                                                                                                         
+    tags:                                                                                                                                                                 
+      - $RUNNER_TAG                                                                                                                                       
+    environment:                                                                                                                                                          
+      name: ${BRANCH}                                                                                                                                                     
+
+
+sq:
+  <<: *cq-definition
+  needs: ["dependencies"]
+  variables:
+    RUNNER_TAG: ptv-docker
+  only:
+    refs:
+      - /^[0-9].*/
+
+
+build-and-push:
+  <<: *build-and-push-definition
+  variables:
+    RUNNER_TAG: ptv-shell 
+  only:
+   refs: ['develop']
+
+publish_release:
+  needs: ["build-and-push"]
+  variables:
+    RUNNER_TAG: ptv-shell 
+  <<: *deploy-definition
+  only:
+   refs: ['develop']
+

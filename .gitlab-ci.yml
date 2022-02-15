@@ -51,7 +51,6 @@ cache:
 
 sq:
   <<: *cq-definition
-  needs: ["dependencies"]
   variables:
     RUNNER_TAG: ptv-docker
   only:

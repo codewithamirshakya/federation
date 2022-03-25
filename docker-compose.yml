@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  apollo_gateway:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./:/app
+    networks:
+      - gateway
+      - lbs_api
+networks:
+  gateway:
+  lbs_api:
+    external: true

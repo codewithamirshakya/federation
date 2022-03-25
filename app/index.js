@@ -3,7 +3,7 @@ const { ApolloServer } = require("apollo-server-express");
 const express = require("express");
 const expressJwt = require("express-jwt");
 const { readFileSync } = require('fs');
-const config = require('./config/default');
+const config = require('../config/default');
 
 const port = 5002;
 const app = express();

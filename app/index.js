@@ -8,7 +8,7 @@ const config = require('../config/default');
 const port = 5002;
 const app = express();
 
-const publicKey = readFileSync('./keys/oauth-public.key');
+const publicKey = readFileSync('./keys_back/oauth-public.key');
 
 app.use(
   expressJwt({

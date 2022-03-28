@@ -65,10 +65,10 @@ build-and-push:
   only:
    refs: ['develop']
 
-publish_release:
+publish_dev:
   needs: ["build-and-push"]
   variables:
-    RUNNER_TAG: ptv-shell 
+    RUNNER_TAG: ptv-shell-portainer 
   <<: *deploy-definition
   only:
    refs: ['develop']

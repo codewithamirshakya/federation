@@ -8,7 +8,7 @@ const config = require('../config/default');
 const port = 5002;
 const app = express();
 
-const publicKey = readFileSync('../keys/oauth-public.key');
+const publicKey = readFileSync('./keys/oauth-public.key');
 
 app.use(
   expressJwt({
@@ -51,5 +51,5 @@ const server = new ApolloServer({
 server.applyMiddleware({ app });
 
 app.listen({ port }, () =>
-  console.log(`Server ready at http://localhost:${port}${server.graphqlPath}`)
+  console.log(`Server ready at :${port}${server.graphqlPath}`)
 );

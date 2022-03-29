@@ -4,6 +4,8 @@ const express = require("express");
 const expressJwt = require("express-jwt");
 const { readFileSync } = require('fs');
 const config = require('../config/default');
+const promMid = require('express-prometheus-middleware');
+
 const { createPrometheusExporterPlugin } = require('@bmatei/apollo-prometheus-exporter')
 const port = 5002;
 const app = express();
@@ -16,6 +18,13 @@ app.use(
         secret: publicKey,
         algorithms: ["RS256"],
         credentialsRequired: false
+    }),
+    promMid({
+        metricsPath: '/metrics',
+        collectDefaultMetrics: false,
+        requestDurationBuckets: [0.1, 0.5, 1, 1.5],
+        requestLengthBuckets: [512, 1024, 5120, 10240, 51200, 102400],
+        responseLengthBuckets: [512, 1024, 5120, 10240, 51200, 102400],
     })
 );
 
@@ -41,6 +50,7 @@ const gateway = new ApolloGateway({
 
 const server = new ApolloServer({
     gateway,
+    graphqlPath: "ptvapi",
     subscriptions: false,
     plugins: [prometheusExporterPlugin],
     context: ({ req }) => {

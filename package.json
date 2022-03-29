@@ -25,6 +25,7 @@
     "consul": "^0.40.0",
     "express": "^4.17.1",
     "express-jwt": "^5.3.3",
+    "express-prometheus-middleware": "^1.2.0",
     "graphql": "15.8.0",
     "graphql-middleware": "^4.0.2",
     "graphql-shield": "^7.2.3",

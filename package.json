@@ -12,6 +12,12 @@
   "dependencies": {
     "@apollo/federation": "^0.13.2",
     "@apollo/gateway": "^0.13.2",
+    "@opentelemetry/api": "^1.0.4",
+    "@opentelemetry/core": "^0.22.0",
+    "@opentelemetry/exporter-zipkin": "^0.22.0",
+    "@opentelemetry/instrumentation-express": "^0.22.0",
+    "@opentelemetry/instrumentation-http": "^0.22.0",
+    "@opentelemetry/node": "^0.22.0",
     "apollo-server": "^2.25.3",
     "apollo-server-express": "^2.11.0",
     "concurrently": "^5.1.0",

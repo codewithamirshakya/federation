@@ -12,17 +12,27 @@
   "dependencies": {
     "@apollo/federation": "^0.13.2",
     "@apollo/gateway": "^0.13.2",
+    "@bmatei/apollo-prometheus-exporter": "^2.1.1",
+    "@opentelemetry/api": "^1.0.4",
+    "@opentelemetry/core": "^0.22.0",
+    "@opentelemetry/exporter-zipkin": "^0.22.0",
+    "@opentelemetry/instrumentation-express": "^0.22.0",
+    "@opentelemetry/instrumentation-http": "^0.22.0",
+    "@opentelemetry/node": "^0.22.0",
     "apollo-server": "^2.25.3",
     "apollo-server-express": "^2.11.0",
     "concurrently": "^5.1.0",
+    "consul": "^0.40.0",
     "express": "^4.17.1",
     "express-jwt": "^5.3.3",
+    "express-prometheus-middleware": "^1.2.0",
     "graphql": "15.8.0",
     "graphql-middleware": "^4.0.2",
     "graphql-shield": "^7.2.3",
     "http-status-codes": "^2.2.0",
     "jsonwebtoken": "^8.5.1",
     "nodemon": "^2.0.3",
+    "prom-client": "^14.0.1",
     "wait-on": "^4.0.2"
   }
 }

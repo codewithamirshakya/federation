@@ -3,9 +3,10 @@ FROM node:16
 # Create app directory
 WORKDIR /app
 
+COPY yarn.lock ./
 COPY package*.json ./
 
-RUN npm install
+RUN yarn install
 
 COPY . .
 COPY docker-entrypoint.sh /

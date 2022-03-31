@@ -1,6 +1,5 @@
 const { ApolloGateway, RemoteGraphQLDataSource } = require("@apollo/gateway");
 const { ApolloServer } = require("apollo-server-express");
-const { ApolloServerPluginInlineTrace } = require("apollo-server-core");
 
 const express = require("express");
 const expressJwt = require("express-jwt");
@@ -50,15 +49,23 @@ const gateway = new ApolloGateway({
     }
 });
 
+const errorEncounterPlugin = {
+    requestDidStart({ context }) {
+      return {
+        async didEncounterErrors({ errors }) {
+          console.log(errors);
+        }
+      };
+    }
+  };
+
 const server = new ApolloServer({
     gateway,
     graphqlPath: "ptvapi",
     subscriptions: false,
     plugins: [
         prometheusExporterPlugin,
-        ApolloServerPluginInlineTrace({
-            rewriteError: (err) => err.message.match(SENSITIVE_REGEX) ? null : err,
-        }),
+        errorEncounterPlugin
     ],
     context: ({ req }) => {
         const user = req.user || null;

@@ -61,7 +61,7 @@ const errorEncounterPlugin = {
 
 const server = new ApolloServer({
     gateway,
-    graphqlPath: "ptvapi",
+    path: "ptvapi",
     subscriptions: false,
     plugins: [
         prometheusExporterPlugin,
@@ -74,7 +74,7 @@ const server = new ApolloServer({
     }
 });
 
-server.applyMiddleware({ app });
+server.applyMiddleware({ app , path: '/ptvapi'});
 
 app.listen({ port }, () =>
     console.log(`Server ready at :${port}${server.graphqlPath}`)

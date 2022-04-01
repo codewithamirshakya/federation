@@ -74,7 +74,7 @@ const server = new ApolloServer({
     }
 });
 
-server.applyMiddleware({ app , path: '/ptvapi'});
+// server.applyMiddleware({ app , path: '/ptvapi'});
 
 app.listen({ port }, () =>
     console.log(`Server ready at :${port}${server.graphqlPath}`)

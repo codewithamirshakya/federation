@@ -61,7 +61,7 @@ const errorEncounterPlugin = {
 
 const server = new ApolloServer({
     gateway,
-    path: "ptvapi",
+    graphqlPath: "ptvapi",
     subscriptions: false,
     plugins: [
         prometheusExporterPlugin,

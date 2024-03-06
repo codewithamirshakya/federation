@@ -11,7 +11,7 @@ const { createPrometheusExporterPlugin } = require('@bmatei/apollo-prometheus-ex
 const port = 5002;
 const app = express();
 
-const publicKey = readFileSync('./keys_back/oauth-public.key');
+const publicKey = readFileSync('./keys/oauth-public.key');
 const prometheusExporterPlugin = createPrometheusExporterPlugin({ app });
 
 app.use(

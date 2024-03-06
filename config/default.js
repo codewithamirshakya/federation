@@ -1,6 +1,6 @@
 const SERVICES = {
-    WEB: process.env.WEB_SERVICE || "http://localhost:8001/graphql",
-    WIDGET: process.env.WIDGET_SERVICE || "http://localhost:9999/graphql"
+    WEB: process.env.WEB_SERVICE || "http://picarto-web.local/ptvapi",
+    WIDGET: process.env.WIDGET_SERVICE || "http://localhost:9901/graphql"
 }
 
 
